@@ -10,6 +10,7 @@ public class Matrix {
     public final static int SINGULAR = -1;
     public final static int INCONSISTENT = 1;
     public final static int INFINITELY = 2;
+    public final static int ILLConditioned = 3;
 
     public Matrix() {
         EPS = eps();
@@ -42,8 +43,12 @@ public class Matrix {
         status = forwardelimination();
 
         print();
-        if (status == SINGULAR)
+
+        if (status == SINGULAR) {
             return SINGULAR;
+        }
+
+        double determinant = determinant();
 
         if (Math.abs(matrix[n - 1][n - 1]) < EPS) {
             if (Math.abs(matrix[n - 1][m - 1]) < EPS) {
@@ -54,6 +59,10 @@ public class Matrix {
         }
 
         solution = backsubstitution();
+
+        if(determinant < 1)
+            return ILLConditioned;
+
         return status;
     }
 
@@ -75,6 +84,15 @@ public class Matrix {
             updateCoffs(k);
         }
         return SOLVED;
+    }
+
+    private double determinant()
+    {
+        double det = 1;
+        for (int i = 0; i < n; i++) {
+            det *= matrix[i][i];
+        }
+        return det;
     }
 
     private int nonZeroRow(int k) {

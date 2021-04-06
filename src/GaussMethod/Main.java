@@ -12,12 +12,14 @@ public class Main {
         matrix.init(file.read());
         matrix.print();
 
+
+        double[] x;
         // matrix.solve() возвращает статус решения матрицы
         switch (matrix.solve()) {
             case Matrix.SOLVED:
                 file.write("Матрица решена!\n");
                 System.out.println("Матрица решена!\n");
-                double[] x = matrix.getSolution();
+                x = matrix.getSolution();
                 for (int i = 0; i < x.length; i++)
                     System.out.printf("%15.3f", x[i]);
                 file.write(x);
@@ -33,6 +35,14 @@ public class Main {
             case Matrix.INFINITELY:
                 file.write("Матрица имеет бесконечное количество решений!\n");
                 System.out.println("Матрица имеет бесконечное количество решений!\n");
+                break;
+            case Matrix.ILLConditioned:
+                file.write("Матрица плохообусловлена. Решение может содержать большую погрешность!\n");
+                System.out.println("Матрица плохообусловлена. Решение может содержать большую погрешность!\n");
+                x = matrix.getSolution();
+                for (int i = 0; i < x.length; i++)
+                    System.out.printf("%15.3f", x[i]);
+                file.write(x);
                 break;
         }
 
