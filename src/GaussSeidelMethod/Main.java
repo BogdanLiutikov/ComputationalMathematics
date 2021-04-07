@@ -14,21 +14,20 @@ public class Main {
         matrix.print();
 
         double[] answ;
-        switch (matrix.solve()) {
-            case Matrix.SOLVED:
-                file.write("Матрица решена!\n");
-                System.out.println("Матрица решена!\n");
-                answ = matrix.getSolution();
-                for (int i = 0; i < answ.length; i++)
-                    System.out.printf("%15.3f", answ[i]);
-                file.write(answ);
-                break;
-            case Matrix.UNSOLVABLE:
-                file.write("Матрицу невозможно решить методом Гаусса – Зейделя!\n");
-                System.out.println("Матрицу невозможно решить методом Гаусса – Зейделя!\n");
-                break;
-        }
 
+        int status = matrix.solve();
+
+        if (status == Matrix.SOLVED) {
+            file.write("Матрица решена!\n");
+            System.out.println("Матрица решена!\n");
+            answ = matrix.getSolution();
+            for (int i = 0; i < answ.length; i++)
+                System.out.printf("%15.6E", answ[i]);
+            file.write(answ);
+        } else {
+            file.write("Матрицу невозможно решить методом Гаусса – Зейделя!\n");
+            System.out.println("Матрицу невозможно решить методом Гаусса – Зейделя!\n");
+        }
 
         file.close();
     }

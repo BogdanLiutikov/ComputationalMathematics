@@ -5,18 +5,12 @@ public class Matrix {
     private double[][] matrix;
     private double[] solution;
     private int n, m;
-    private double eps;
-    private final double EPS;
+    private double EPS;
     public final static int SOLVED = 0;
     public final static int UNSOLVABLE = -1;
 
-
-    public Matrix() {
-        EPS = eps();
-    }
-
     public void init(File file) {
-        this.eps = file.readEps();
+        this.EPS = file.readEps();
         this.matrix = file.readMatrix();
         n = matrix.length;
         m = matrix[0].length;
@@ -66,18 +60,18 @@ public class Matrix {
     private double[] GaussSeidel(double[] initialApproximation) {
 
         double[] x = initialApproximation;
-        boolean completionСondition = false;
+        boolean completionCondition = false;
         double prevX;
         int iterations = 0;
-        while (!completionСondition) {
+        while (!completionCondition) {
             iterations++;
-            completionСondition = true;
+            completionCondition = true;
             for (int i = 0; i < n; i++) {
                 prevX = x[i];
                 x[i] = (matrix[i][m - 1] - otherXSum(i, x)) / matrix[i][i];
-                if (Math.abs(x[i] - prevX) < eps)
+                if (Math.abs(x[i] - prevX) < EPS)
                     continue;
-                completionСondition = false;
+                completionCondition = false;
             }
         }
         System.out.printf("Метод получил ответ за %d итераций\n", iterations);
@@ -167,6 +161,9 @@ public class Matrix {
         return false;
     }
 
+    /**
+     * @return Является ли матрица матрицей с диагональным преобладанием.
+     */
     private boolean diagonalPredominance() {
         for (int i = 0; i < n; i++) {
             if (absRowSum(matrix[i]) - 2 * Math.abs(matrix[i][i]) >= EPS)
@@ -190,18 +187,18 @@ public class Matrix {
     public void print() {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                System.out.printf("%15.3E", matrix[i][j]);
+                System.out.printf("%15.6E", matrix[i][j]);
             }
             System.out.println();
         }
         System.out.println();
     }
 
-    private double eps() {
-        double eps = 1.0;
-        while (1 + eps > 1) {
-            eps = eps / 10;
-        }
-        return eps;
-    }
+//    private double eps() {
+//        double eps = 1.0;
+//        while (1 + eps > 1) {
+//            eps = eps / 10;
+//        }
+//        return eps;
+//    }
 }

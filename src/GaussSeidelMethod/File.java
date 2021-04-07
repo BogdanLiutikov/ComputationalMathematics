@@ -17,8 +17,7 @@ public class File {
     }
 
     public double readEps() {
-        double eps = Double.parseDouble(scanner.nextLine());
-        return eps;
+        return Double.parseDouble(scanner.nextLine());
     }
 
     public double[][] readMatrix() {
@@ -40,7 +39,7 @@ public class File {
     public void write(double[] matrix) {
 
         for (int i = 0; i < matrix.length; i++) {
-            printWriter.printf("%15.3E", matrix[i]);
+            printWriter.printf("%15.6E", matrix[i]);
         }
         printWriter.flush();
     }
