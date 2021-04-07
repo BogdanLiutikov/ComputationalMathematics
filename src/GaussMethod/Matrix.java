@@ -6,11 +6,11 @@ public class Matrix {
     private double[] solution;
     private int n, m;
     private double EPS;
+    private int status;
     public final static int SOLVED = 0;
     public final static int SINGULAR = -1;
     public final static int INCONSISTENT = 1;
     public final static int INFINITELY = 2;
-    public final static int ILLConditioned = 3;
 
     public void init(File file) {
         this.EPS = file.readEps();
@@ -26,16 +26,25 @@ public class Matrix {
     public void print() {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                System.out.printf("%15.3E", matrix[i][j]);
+                System.out.printf("%15.6E", matrix[i][j]);
             }
             System.out.println();
         }
         System.out.println();
     }
 
+    /**
+     * <ul>
+     *     <li> SOLVED = 0 - Система успешно решена.
+     *     <li> SINGULAR = -1 - Система вырождена.
+     *     <li> INCONSISTENT = 1 - Система не имеет решений.
+     *     <li> INFINITELY = 2 - Система имеет бесконечное количество решений.
+     * <ul/>
+     * @return Статус решения системы
+     */
     public int solve() {
 
-        int status = forwardelimination();
+        status = forwardelimination();
 
         print();
 
@@ -45,8 +54,10 @@ public class Matrix {
 
         if (Math.abs(matrix[n - 1][n - 1]) < EPS) {
             if (Math.abs(matrix[n - 1][m - 1]) < EPS) {
+                status = INFINITELY;
                 return INFINITELY;
             } else {
+                status = INCONSISTENT;
                 return INCONSISTENT;
             }
         }
@@ -56,6 +67,10 @@ public class Matrix {
         return status;
     }
 
+    /**
+     * Приведение к треугольному виду.
+     * @return Возвращает либо SOLVED = 0 при успешном приведение системы к треугольному виду, либо SINGULAR = -1, в случае обнаружения вырождености системы.
+     */
     private int forwardelimination() {
 
         int i, k;
@@ -121,6 +136,17 @@ public class Matrix {
         return x;
     }
 
+    public String getStatus() {
+        switch (status){
+            case Matrix.SINGULAR:
+                return ("Система вырождена!");
+            case Matrix.INCONSISTENT:
+                return ("Система не имеет решений!");
+            case Matrix.INFINITELY:
+                return ("Система имеет бесконеченое колчиество решений!");
+        }
+        return ("Система не решена!");
+    }
 //    private double eps() {
 //        double eps = 1.0;
 //        while (1 + eps > 1) {

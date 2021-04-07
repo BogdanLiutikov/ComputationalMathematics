@@ -14,37 +14,20 @@ public class Main {
 
 
         double[] x;
-        // matrix.solve() возвращает статус решения матрицы
-        switch (matrix.solve()) {
-            case Matrix.SOLVED:
-                file.write("Матрица решена!\n");
-                System.out.println("Матрица решена!\n");
-                x = matrix.getSolution();
-                for (int i = 0; i < x.length; i++)
-                    System.out.printf("%15.3f", x[i]);
-                file.write(x);
-                break;
-            case Matrix.SINGULAR:
-                file.write("Матрица оказалась вырожденной!\n");
-                System.out.println("Матрица оказалась вырожденной!\n");
-                break;
-            case Matrix.INCONSISTENT:
-                file.write("Матрица не имеет решений!\n");
-                System.out.println("Матрица не имеет решений!\n");
-                break;
-            case Matrix.INFINITELY:
-                file.write("Матрица имеет бесконечное количество решений!\n");
-                System.out.println("Матрица имеет бесконечное количество решений!\n");
-                break;
-            case Matrix.ILLConditioned:
-                file.write("Матрица плохообусловлена. Решение может содержать большую погрешность!\n");
-                System.out.println("Матрица плохообусловлена. Решение может содержать большую погрешность!\n");
-                x = matrix.getSolution();
-                for (int i = 0; i < x.length; i++)
-                    System.out.printf("%15.3f", x[i]);
-                file.write(x);
-                break;
+        int status = matrix.solve();
+
+        if (status == Matrix.SOLVED) {
+            x = matrix.getSolution();
+            file.write(matrix.getSolution());
+            for (int i = 0; i < x.length; i++) {
+                System.out.printf("%15.6E", x[i]);
+            }
+        } else {
+            String message = matrix.getStatus();
+            file.write(message);
+            System.out.println(message);
         }
+
 
         file.close();
     }
