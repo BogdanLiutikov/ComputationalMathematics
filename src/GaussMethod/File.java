@@ -20,6 +20,10 @@ public class File {
         printWriter = new PrintWriter(output);
     }
 
+    public double readEps() {
+        return Double.parseDouble(scanner.nextLine());
+    }
+
     public double[][] read() {
         String[] str = scanner.nextLine().split(" ");
         int n = Integer.parseInt(str[0]);

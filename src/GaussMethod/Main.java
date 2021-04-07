@@ -9,7 +9,7 @@ public class Main {
         File file = new File("input.txt", "output.txt");
         Matrix matrix = new Matrix();
 
-        matrix.init(file.read());
+        matrix.init(file);
         matrix.print();
 
 

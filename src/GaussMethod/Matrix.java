@@ -5,20 +5,16 @@ public class Matrix {
     private double[][] matrix;
     private double[] solution;
     private int n, m;
-    private final double EPS;
+    private double EPS;
     public final static int SOLVED = 0;
     public final static int SINGULAR = -1;
     public final static int INCONSISTENT = 1;
     public final static int INFINITELY = 2;
     public final static int ILLConditioned = 3;
 
-    public Matrix() {
-        EPS = eps();
-    }
-
-
-    public void init(double[][] matrix) {
-        this.matrix = matrix;
+    public void init(File file) {
+        this.EPS = file.readEps();
+        this.matrix = file.read();
         n = matrix.length;
         m = matrix[0].length;
     }
@@ -39,16 +35,13 @@ public class Matrix {
 
     public int solve() {
 
-        int status;
-        status = forwardelimination();
+        int status = forwardelimination();
 
         print();
 
         if (status == SINGULAR) {
             return SINGULAR;
         }
-
-        double determinant = determinant();
 
         if (Math.abs(matrix[n - 1][n - 1]) < EPS) {
             if (Math.abs(matrix[n - 1][m - 1]) < EPS) {
@@ -59,9 +52,6 @@ public class Matrix {
         }
 
         solution = backsubstitution();
-
-        if(determinant < 1)
-            return ILLConditioned;
 
         return status;
     }
@@ -86,15 +76,6 @@ public class Matrix {
         return SOLVED;
     }
 
-    private double determinant()
-    {
-        double det = 1;
-        for (int i = 0; i < n; i++) {
-            det *= matrix[i][i];
-        }
-        return det;
-    }
-
     private int nonZeroRow(int k) {
         int i = k;
         while (Math.abs(matrix[i][k]) < EPS) {
@@ -116,6 +97,8 @@ public class Matrix {
             matrix[i][k] = 0;
             for (j = k + 1; j < this.m; j++) {
                 matrix[i][j] -= matrix[k][j] * m;
+                if (Math.abs(matrix[i][j]) < EPS)
+                    matrix[i][j] = 0;
             }
         }
     }
@@ -138,11 +121,11 @@ public class Matrix {
         return x;
     }
 
-    private double eps() {
-        double eps = 1.0;
-        while (1 + eps > 1) {
-            eps = eps / 10;
-        }
-        return eps;
-    }
+//    private double eps() {
+//        double eps = 1.0;
+//        while (1 + eps > 1) {
+//            eps = eps / 10;
+//        }
+//        return eps;
+//    }
 }
