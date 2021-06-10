@@ -14,7 +14,7 @@ public class Matrix {
 
     public void init(File file) {
         this.EPS = file.readEps();
-        this.matrix = file.read();
+        this.matrix = file.readMatrix();
         n = matrix.length;
         m = matrix[0].length;
     }
@@ -147,11 +147,5 @@ public class Matrix {
         }
         return ("Система не решена!");
     }
-//    private double eps() {
-//        double eps = 1.0;
-//        while (1 + eps > 1) {
-//            eps = eps / 10;
-//        }
-//        return eps;
-//    }
+
 }

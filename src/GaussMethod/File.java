@@ -19,7 +19,7 @@ public class File {
         return Double.parseDouble(scanner.nextLine());
     }
 
-    public double[][] read() {
+    public double[][] readMatrix() {
         String[] str = scanner.nextLine().split(" ");
         int n = Integer.parseInt(str[0]);
         int m = Integer.parseInt(str[1]);
