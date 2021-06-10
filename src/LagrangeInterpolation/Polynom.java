@@ -1,15 +1,11 @@
 package LagrangeInterpolation;
 
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Polynom {
 
-    public Monomial head;
+    private Monomial head;
     private final static double EPS = 1e-16;
 
-    public static class Monomial {
+    private static class Monomial {
         int p;
         double a;
         Monomial next;
@@ -21,95 +17,99 @@ public class Polynom {
         }
     }
 
-    public Polynom(String polynom) {
-
-        head = null;
-        Pattern polynomPattern = Pattern.compile(".[+-]+");
-        Pattern monomialPattern = Pattern.compile("x\\^");
-        Matcher matcher = polynomPattern.matcher(polynom);
-
-        ArrayList<String> signs = new ArrayList<>();
-
-        String[] monomials = polynomPattern.split(polynom);
-        String[] monomial;
-        while (matcher.find()) {
-            int start = matcher.start();
-            int end = matcher.end();
-            signs.add(polynom.substring(start, end).trim());
-        }
-
-        signs.add(0, "+");
-
-        for (int i = 0; i < monomials.length; i++) {
-            monomial = monomialPattern.split(monomials[i]);
-            add(Integer.parseInt(monomial[1].trim()), (signs.get(i).equals("+") ? 1 : -1) * Double.parseDouble(monomial[0]));
-        }
-        revers();
-    }
-
     public Polynom() {
         head = null;
     }
 
-    public void add(int p, double a) {
-        if (Math.abs(a) >= EPS)
-            head = new Monomial(p, a, head);
+    public Polynom(int p, double a) {
+        head = new Monomial(p, a, null);
     }
 
-    public static Polynom sum(Polynom polynom1, Polynom polynom2) {
+    private void add(int p, double a, Monomial addTo) {
+        addTo.next = new Monomial(p, a, null);
+    }
 
-        Polynom polynom = new Polynom();
+    public void sum(Polynom polynom1, Polynom polynom2) {
+
+        Polynom polynom = new Polynom(0, 0);
+        Monomial polynomPointer = polynom.head;
         Monomial polynomPointer1 = polynom1.head;
         Monomial polynomPointer2 = polynom2.head;
+
         while (polynomPointer1 != null && polynomPointer2 != null) {
 
             if (polynomPointer1.p > polynomPointer2.p) {
-                polynom.add(polynomPointer1.p, polynomPointer1.a);
+                if (nonZero(polynomPointer1.a)) {
+                    polynom.add(polynomPointer1.p, polynomPointer1.a, polynomPointer);
+                    polynomPointer = polynomPointer.next;
+                }
                 polynomPointer1 = polynomPointer1.next;
             } else if (polynomPointer1.p < polynomPointer2.p) {
-                polynom.add(polynomPointer2.p, polynomPointer2.a);
+                if (nonZero(polynomPointer2.a)) {
+                    polynom.add(polynomPointer2.p, polynomPointer2.a, polynomPointer);
+                    polynomPointer = polynomPointer.next;
+                }
                 polynomPointer2 = polynomPointer2.next;
             } else {
-                polynom.add(polynomPointer1.p, polynomPointer1.a + polynomPointer2.a);
+                if (nonZero(polynomPointer1.a + polynomPointer2.a)) {
+                    polynom.add(polynomPointer1.p, polynomPointer1.a + polynomPointer2.a, polynomPointer);
+                    polynomPointer = polynomPointer.next;
+                }
                 polynomPointer1 = polynomPointer1.next;
                 polynomPointer2 = polynomPointer2.next;
             }
         }
 
-        while (polynomPointer1 != null) {
-            polynom.add(polynomPointer1.p, polynomPointer1.a);
-            polynomPointer1 = polynomPointer1.next;
+        if (polynomPointer1 != null)
+            polynomPointer.next = copy(polynomPointer1);
+        else if (polynomPointer2 != null)
+            polynomPointer.next = copy(polynomPointer2);
 
-        }
-        while (polynomPointer2 != null) {
-            polynom.add(polynomPointer2.p, polynomPointer2.a);
-            polynomPointer2 = polynomPointer2.next;
-        }
-
-        polynom.revers();
-        return polynom;
+        this.head = polynom.head.next;
     }
 
-    public static Polynom multiply(Polynom polynom1, Polynom polynom2) {
+    private Monomial copy(Monomial polynomPointerFrom) {
+        Polynom polynomTail = new Polynom(0, 0);
+        Monomial polymonPointer = polynomTail.head;
+        while (polynomPointerFrom != null) {
+            if (nonZero(polynomPointerFrom.a)) {
+                polynomTail.add(polynomPointerFrom.p, polynomPointerFrom.a, polymonPointer);
+                polymonPointer = polymonPointer.next;
+            }
+            polynomPointerFrom = polynomPointerFrom.next;
+        }
+        return polynomTail.head.next;
+    }
 
-        Polynom polynom = new Polynom();
+    public void multiply(Polynom polynom1, Polynom polynom2) {
+
+        Polynom polynom = new Polynom(0, 0);
         Monomial polynomPointer1 = polynom1.head;
         Monomial polynomPointer2 = polynom2.head;
+        Polynom current = new Polynom(0, 0);
+        Monomial currentPointer;
 
         while (polynomPointer1 != null) {
+             currentPointer= current.head;
             while (polynomPointer2 != null) {
-                polynom.add(polynomPointer1.p + polynomPointer2.p, polynomPointer1.a * polynomPointer2.a);
+                if (nonZero(polynomPointer1.a * polynomPointer2.a)) {
+                    current.add(polynomPointer1.p + polynomPointer2.p, polynomPointer1.a * polynomPointer2.a, currentPointer);
+                    currentPointer = currentPointer.next;
+                }
                 polynomPointer2 = polynomPointer2.next;
             }
+            current.head = current.head.next;
+            polynom.sum(polynom, current);
             polynomPointer2 = polynom2.head;
             polynomPointer1 = polynomPointer1.next;
         }
 
-        polynom.revers();
-        polynom.similarMembers();
-        return polynom;
+        this.head = polynom.head;
     }
 
+    /**
+     * @param a multiply polynom by a
+     */
     public void multiply(double a) {
         Monomial h = head;
         while (h != null) {
@@ -118,83 +118,33 @@ public class Polynom {
         }
     }
 
-    private void revers() {
-        Monomial lasth = null;
-        Monomial nexth;
-
-        if (head != null)
-            nexth = head.next;
-        else return;
-
-        while (nexth != null) {
-            head.next = lasth;
-            lasth = head;
-            head = nexth;
-            nexth = head.next;
-        }
-        head.next = lasth;
-    }
-
-    private void similarMembers() {
-        Monomial h = head;
-        Monomial next = null;
-        while (h != null) {
-            next = h.next;
-            while (next != null) {
-                if (h.p == next.p) {
-                    h.a += next.a;
-                    h.next = next.next;
-                }
-                next = next.next;
-            }
-            h = h.next;
-        }
+    private boolean nonZero(double a) {
+        return Math.abs(a) >= EPS;
     }
 
     public void print() {
-        Monomial h = head;
-
-        if (h.a < 0)
-            System.out.print("-");
-
-        while (h != null) {
-
-            //Коэфф
-            if (Math.abs(h.a) != 1)
-                System.out.print(Math.abs(h.a));
-            else if (h.p == 0)
-                System.out.print(Math.abs(h.a));
-
-            //Степень
-            if (h.p >= 2)
-                System.out.print("x^" + h.p);
-            else if (h.p == 1)
-                System.out.print("x");
-
-            //Знак
-            if (h.next != null)
-                if (h.next.a > 0)
-                    System.out.print(" + ");
-                else
-                    System.out.print(" - ");
-
-            h = h.next;
-        }
-        System.out.println("\n");
+        System.out.println(this.toString());
     }
 
     public double calculate(double x) {
-
         Monomial h = head;
-        double result = 0;
-        double mon;
-        while (h != null){
-            mon = Math.pow(x, h.p);
-            mon *= h.a;
-            result += mon;
-            h = h.next;
+        Monomial previous = head;
+        double b = 0;
+        for (int i = h.p; i >= 0; i--) {
+            if (h != null) {
+                if (previous.p - h.p <= 1) {
+                    b = h.a + x * b;
+                    previous = h;
+                    h = h.next;
+                } else {
+                    b = 0 + x * b;
+                    previous = h;
+                }
+            } else {
+                b = 0 + x * b;
+            }
         }
-        return result;
+        return b;
     }
 
     @Override

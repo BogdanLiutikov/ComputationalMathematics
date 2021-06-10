@@ -1,21 +1,16 @@
 package LagrangeInterpolation;
 
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
 import org.jfree.chart.ChartColor;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.chart.util.ShapeList;
-import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import javax.swing.*;
-import java.awt.geom.*;
+import java.awt.geom.Ellipse2D;
 
 
 public class Graph {
@@ -26,13 +21,13 @@ public class Graph {
         XYSeries interpolation = new XYSeries("LagrangeInterpolation");
         XYSeries dots = new XYSeries("Dots");
 
-        for (double i = a; i < b; i += 0.1) {
+        for (double i = a; i < b; i += 0.01) {
             function.add(i, Main.function(i));
         }
 
         XYDataset xyDataset = new XYSeriesCollection(function);
 
-        for (double i = a; i < b; i += 0.1) {
+        for (double i = a; i < b; i += 0.01) {
             interpolation.add(i, polynom.calculate(i));
         }
 
@@ -45,9 +40,6 @@ public class Graph {
 
         //createScatterPlot
         JFreeChart chart = ChartFactory.createXYLineChart("", "x", "y", xyDataset);
-
-//        chart.setBackgroundPaint(ChartColor.VERY_LIGHT_YELLOW);
-//        chart.getPlot().setBackgroundPaint(ChartColor.CYAN);
 
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
         renderer.setSeriesPaint(0, ChartColor.BLUE);

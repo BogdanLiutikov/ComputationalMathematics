@@ -16,39 +16,16 @@ public class File {
         printWriter = new PrintWriter(output);
     }
 
-    public int readInt(){
+    public int readInt() {
         return scanner.nextInt();
     }
-    public double readDouble(){
+
+    public double readDouble() {
         return scanner.nextDouble();
     }
 
-    public String readLine(){
+    public String readLine() {
         return scanner.nextLine();
-    }
-
-    public double[][] readMatrix() {
-
-        String[] str = scanner.nextLine().split(" ");
-        int n = Integer.parseInt(str[0]);
-        int m = Integer.parseInt(str[1]);
-        double[][] matrix = new double[n][m + 1]; // colum b
-
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m + 1; j++) {
-                matrix[i][j] = Double.parseDouble(scanner.next());
-            }
-        }
-        return matrix;
-    }
-
-    public void write(double[] matrix) {
-
-        for (int i = 0; i < matrix.length; i++) {
-            printWriter.printf("%15.6E", matrix[i]);
-        }
-        printWriter.flush();
     }
 
     public void write(String s) {
@@ -60,5 +37,4 @@ public class File {
         scanner.close();
         printWriter.close();
     }
-
 }
